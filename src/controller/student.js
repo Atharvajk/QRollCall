@@ -58,7 +58,7 @@ const saveStudDetails=async (req,res,next)=>{
     const id=req.params.id
     var {name,department,semister,classroom,mobileNum,rollNo,email,password} =req.body;
     let user
-    classroom=(classroom.toUpperCase()).trim()
+    classroom=classroom.toUpperCase().trim()
     classroom=await Classroom.findOne({name:classroom});
     semister=await Semister.findOne({semNo:semister});
     classroom=classroom._id
