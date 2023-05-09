@@ -38,6 +38,9 @@ dependencies:
   google_fonts: ^4.0.3
   percent_indicator: ^4.2.3
   velocity_x: ^3.6.0
+  http: ^0.13.6
+  qrscan: ^0.3.3
+  shimmer_animation: ^2.1.0+1
 
 dev_dependencies:
   flutter_test:
