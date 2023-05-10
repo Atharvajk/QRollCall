@@ -4,7 +4,9 @@ const getSemDetails=async (req,res,next)=>{
    var data;
    var subDetails;
    try{
-    data=await Semister.find()   
+    data=await Semister.find().populate({
+      path:'subjects'
+    }) 
    }catch(err){
     next(err)
    }

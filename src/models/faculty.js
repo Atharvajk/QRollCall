@@ -14,8 +14,9 @@ const subschema=new schema({
          ref:'Subject',
          required:true
        },
-       class:{
-         type:String,
+       classroom:{
+         type:schema.Types.ObjectId,
+         ref:'Classroom',
          required:true
        },
        satrtTime:{

@@ -10,7 +10,8 @@ const getFacultyDetails=async (req,res,next)=>{
         {
           path: 'schedule',
           populate:[
-            'subject'
+            'subject',
+            'classroom'
           ]
         }
       ]
@@ -34,7 +35,8 @@ const getTodaysTimetable=async(req,res,next)=>{
         {
           path: 'schedule',
           populate:[
-            'subject'
+            'subject',
+            'classroom'
           ]
         }
       ]
@@ -88,6 +90,19 @@ const setTimeTable=async (req,res,next)=>{
     return res.status(200).json({msg:"Time table set sucessfully"})  
 
 }
+
+const getfacultydetail=async(req,res,next)=>{
+  const id=req.params.id
+  var faculty;
+  try{
+      faculty=await Faculty.findById(id)
+  }catch(err){
+    next(err)
+  }
+  if(!faculty)
+    return res.status(500).json({message:"Internal server error"})
+  return res.status(200).json({msg:"Success",faculty})  
+}
 const facultylogin=async(req,res,next)=>{
      var {email,password}=req.body
     //  username=username.trim()
@@ -124,6 +139,7 @@ module.exports={
     saveFacultyDetails,
     facultylogin,
     setTimeTable,
+    getfacultydetail,
     getTodaysTimetable,
     deleteFaculty
 }

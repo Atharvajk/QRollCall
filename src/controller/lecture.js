@@ -10,18 +10,22 @@ const initAttendance = async (req, res, next) => {
   //  console.log("All students from class", allStuds)
   const lecture = new Lecture({
     // other fields of the Lecture schema
+    facultyId:facultyId,
+    subjectId:subjectId,
+    classroom:classroom,
     allStudents: classroomStudents.map((student) => ({
       studentId: student._id,
       isPresent: false,
-    })),
+    }))
   });
 
   await lecture.save();
-  res.status(201).json({ message: "Lecture initialized", lecture });
+  res.status(201).json({ message: "Lecture initialized", lecture, lectureURL:`http://localhost:5000/api/v1/mark-attendance/${lecture._id}` });
 };
 
 const markStudentAttendace = async (req, res, next) => {
-  const { studentId, lectureId } = req.body;
+  var lectureId=req.params.id
+  const { studentId } = req.body;
   try {
     const lecture = await Lecture.findById(lectureId);
     const student=lecture.allStudents.filter((val)=>{
