@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:qrollcall/pages/MyRoutes.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -19,6 +20,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   ScrollController scrollController = ScrollController();
   final url = "https://reqres.in/api/users?page=2";
+
   static bool isloading = true;
 
   @override
@@ -42,8 +44,7 @@ class _HomePageState extends State<HomePage> {
     UserModel.users =
         List.from(userdata).map<User>((user) => User.fromMap(user)).toList();
     setState(() {
-    isloading = false;
-      
+      isloading = false;
     });
   }
 
@@ -57,14 +58,39 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const Drawer(
+        width: 250,
+      ),
+      appBar: AppBar(
+        //title: Center(child: "QRollCall".text.xl2.bold.make()),
+        foregroundColor: Colors.black,
+      ),
       body: SafeArea(
           child: SingleChildScrollView(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          FittedBox(
-              child: const Text("Hello, Atharva!",
-                      style:
-                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold))
-                  .p20()),
+          Row(
+            children: [
+              Expanded(
+                child: FittedBox(
+                    child: const Text("Hello, Atharva!",
+                            style: TextStyle(
+                                fontSize: 30, fontWeight: FontWeight.bold))
+                        .px20()),
+              ),
+              InkWell(
+                onTap: () => {print("Profile taped!")},
+                child: Ink(
+                  height: 60,
+                  width: 60,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.person),
+                ).p20(),
+              )
+            ],
+          ),
           const Text("Your Attendance",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))
               .px24(),
@@ -88,7 +114,6 @@ class _HomePageState extends State<HomePage> {
                               color: Color.fromARGB(255, 201, 201, 201),
                               borderRadius: BorderRadius.circular(15)),
                         ).p8(),
-                        
                       );
                     })
                 : ListView.builder(
@@ -105,7 +130,9 @@ class _HomePageState extends State<HomePage> {
           ),
           Center(
             child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, MyRoutes.scanpage);
+                },
                 child: Ink(
                     height: 50,
                     width: 150,
