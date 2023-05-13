@@ -1,13 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:velocity_x/velocity_x.dart';
-class ScanPage extends StatelessWidget {
+import 'package:qrscan/qrscan.dart' as scanner;
+
+class ScanPage extends StatefulWidget {
   const ScanPage({super.key});
 
   @override
+  State<ScanPage> createState() => _ScanPageState();
+}
+
+class _ScanPageState extends State<ScanPage> {
+  String result = "Hello World...!";
+  Future _scanQR() async {
+    try {
+      String? cameraScanResult = await scanner.scan();
+      setState(() {
+        result =
+            cameraScanResult!; // setting string result with cameraScanResult
+      });
+      print(result);
+    } on PlatformException catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _scanQR();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      child: "THis is scnapage".text.make(),
+    return Scaffold(
+      appBar: AppBar(),
+      body: SafeArea(child: Center(child: "THis is scanpage".text.make())),
     );
   }
 }

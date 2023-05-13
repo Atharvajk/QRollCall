@@ -28,11 +28,12 @@ class _HomePageState extends State<HomePage> {
     // TODO: implement initState
     super.initState();
     loaddata();
-    Future.delayed(Duration(milliseconds: 500), () {
-      scrollController.animateTo(scrollController.position.maxScrollExtent,
-          duration: Duration(seconds: UserModel.users.length * 10),
-          curve: Curves.linear);
-    });
+    // Future.delayed(Duration(milliseconds: 500), () {
+    //   scrollController.animateTo(scrollController.position.maxScrollExtent,
+    //       duration: Duration(seconds: UserModel.users.length * 10),
+    //       curve: Curves.linear);
+    // }
+    // );
   }
 
   loaddata() async {
