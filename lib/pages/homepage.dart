@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qrollcall/components/splash.dart';
@@ -101,10 +102,14 @@ class _HomePageState extends State<HomePage> {
               accountEmail: Text("$email"),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.orange,
-                child: (isloading)?Text("A"):Text(
-                  "${name[0]}",
-                  style: const TextStyle(fontSize: 40.0,),
-                ),
+                child: (isloading)
+                    ? Text("A")
+                    : Text(
+                        "${name[0]}",
+                        style: const TextStyle(
+                          fontSize: 40.0,
+                        ),
+                      ),
               ),
             ),
             ListTile(
@@ -132,7 +137,38 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.lock),
               title: Text("LogOut"),
               onTap: () {
-                logout(context);
+                // showDialog(
+                //     context: context,
+                //     builder: (BuildContext context) {
+                //       return AlertDialog(
+                //         title: Text("dialog"),
+                //         content: Text("Do you want to logout?"),
+                //         );
+                //     });
+
+                showDialog(
+                  barrierDismissible: true,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+
+                        title: Text("Logout"),
+                        content: Text("Do you want to logout?"),
+                        actions: [
+                          TextButton(child: Text("No"),onPressed: () {
+                              Navigator.pop(context);
+                            },),
+                          TextButton(
+                            child: Text("Yes"),
+                            onPressed: () {
+                              logout(context);
+                            },
+                          ),
+                        ],
+                        elevation: 10,
+                      );
+                    });
+
                 // Navigator.pop(context);
               },
             ),
@@ -149,19 +185,21 @@ class _HomePageState extends State<HomePage> {
           Row(
             children: [
               Expanded(
-                child: (isloading)?Shimmer(
-                  color: Colors.white,
+                child: (isloading)
+                    ? Shimmer(
+                        color: Colors.white,
                         child: Container(
-                          height: 50,
-                          width: 200,
-                          decoration: BoxDecoration(
-                              ///color: Color.fromARGB(255, 227, 227, 227),
-                          ))
-                  ):FittedBox(
-                    child: Text("Hello, $name!",
-                            style: const TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold))
-                        .px20()),
+                            height: 50,
+                            width: 200,
+                            decoration: BoxDecoration(
+
+                                ///color: Color.fromARGB(255, 227, 227, 227),
+                                )))
+                    : FittedBox(
+                        child: Text("Hello, $name!",
+                                style: const TextStyle(
+                                    fontSize: 30, fontWeight: FontWeight.bold))
+                            .px20()),
               ),
               InkWell(
                 onTap: () => {print("Profile taped!")},

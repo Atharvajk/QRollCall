@@ -10,51 +10,51 @@ class LoginStatus {
   static const String email = "email";
 }
 
-class User_Model {
-  final String id;
-  final String name;
-  final String department;
-  final String semester;
-  final String classroom;
-  final String mobileNum;
-  final int rollNo;
-  final String email;
+// class User_Model {
+//   final String id;
+//   final String name;
+//   final String department;
+//   final String semester;
+//   final String classroom;
+//   final String mobileNum;
+//   final int rollNo;
+//   final String email;
 
-  User_Model({
-    required this.id,
-    required this.name,
-    required this.department,
-    required this.semester,
-    required this.classroom,
-    required this.mobileNum,
-    required this.rollNo,
-    required this.email,
-  });
+//   User_Model({
+//     required this.id,
+//     required this.name,
+//     required this.department,
+//     required this.semester,
+//     required this.classroom,
+//     required this.mobileNum,
+//     required this.rollNo,
+//     required this.email,
+//   });
 
-  User_Model.fromJson(Map<String, dynamic> json)
-      : id= json["_id"],
-        name= json["name"],
-        department= json["department"],
-        semester= json["semister"],
-        classroom= json["classroom"],
-        mobileNum= json["mobileNum"],
-        rollNo= json["rollNo"],
-        email= json["email"];
+//   User_Model.fromJson(Map<String, dynamic> json)
+//       : id= json["_id"],
+//         name= json["name"],
+//         department= json["department"],
+//         semester= json["semister"],
+//         classroom= json["classroom"],
+//         mobileNum= json["mobileNum"],
+//         rollNo= json["rollNo"],
+//         email= json["email"];
 
 
-  Map<String, dynamic> toJson() => {
-        "_id": id,
-        "name": name,
-        "department": department,
-        "semister": semester,
-        "classroom": classroom,
-        "mobileNum": mobileNum,
-        "rollNo": rollNo,
-        "email": email,
+//   Map<String, dynamic> toJson() => {
+//         "_id": id,
+//         "name": name,
+//         "department": department,
+//         "semister": semester,
+//         "classroom": classroom,
+//         "mobileNum": mobileNum,
+//         "rollNo": rollNo,
+//         "email": email,
         
 
-      };
-}
+//       };
+// }
 
 // class ProfileModel {
 //   static List<UserProfile> users = [
