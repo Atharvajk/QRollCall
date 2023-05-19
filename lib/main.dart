@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:qrollcall/components/splash.dart';
 import 'package:qrollcall/pages/MyRoutes.dart';
 import 'package:qrollcall/pages/homepage.dart';
 import 'package:qrollcall/pages/scanpage.dart';
@@ -15,8 +16,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePage(),
-      initialRoute: "/home",
+      debugShowCheckedModeBanner: false,
+
+      home: const SplashScreen(),
+     // initialRoute: "/home",
       themeMode: ThemeMode.light,
       theme: MyTheme.lightTheme(context),
       darkTheme: MyTheme.darkTheme(context),

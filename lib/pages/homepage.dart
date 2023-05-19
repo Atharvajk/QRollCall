@@ -1,8 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:qrollcall/components/splash.dart';
+import 'package:qrollcall/info/profile.dart';
 import 'package:qrollcall/pages/MyRoutes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -22,11 +26,17 @@ class _HomePageState extends State<HomePage> {
   final url = "https://reqres.in/api/users?page=2";
 
   static bool isloading = true;
-
+  var name;
+  var email;
+  var initail;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    setState(() {
+      isloading = true;
+    });
     loaddata();
     // Future.delayed(Duration(milliseconds: 500), () {
     //   scrollController.animateTo(scrollController.position.maxScrollExtent,
@@ -37,6 +47,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   loaddata() async {
+    var sharedpref = await SharedPreferences.getInstance();
+    name = await sharedpref.getString(LoginStatus.name);
+    print("Name laoded $name");
+    // initail = name.charAt(0);
+    email = await sharedpref.getString(LoginStatus.email);
     await Future.delayed(Duration(seconds: 2));
     final response = await http.get(Uri.parse(url));
     final catalogJson = response.body;
@@ -44,9 +59,25 @@ class _HomePageState extends State<HomePage> {
     var userdata = decodedData["data"];
     UserModel.users =
         List.from(userdata).map<User>((user) => User.fromMap(user)).toList();
-    setState(() {
-      isloading = false;
+    Timer(Duration(seconds: 1), () {
+      setState(() {
+        isloading = false;
+      });
     });
+  }
+
+  void logout(BuildContext context) async {
+    var sharedpref = await SharedPreferences.getInstance();
+    sharedpref.setBool(LoginStatus.LOGKEY, false);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return const SplashScreen();
+        },
+      ),
+    );
   }
 
   @override
@@ -59,8 +90,54 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const Drawer(
+      drawer: Drawer(
         width: 250,
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              accountName: Text("$name"),
+              accountEmail: Text("$email"),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.orange,
+                child: (isloading)?Text("A"):Text(
+                  "${name[0]}",
+                  style: const TextStyle(fontSize: 40.0,),
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text("Home"),
+              onTap: () {
+                // Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text("Settings"),
+              onTap: () {
+                //Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.contacts),
+              title: Text("Contact Us"),
+              onTap: () {
+                // Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.lock),
+              title: Text("LogOut"),
+              onTap: () {
+                logout(context);
+                // Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
       appBar: AppBar(
         //title: Center(child: "QRollCall".text.xl2.bold.make()),
@@ -72,9 +149,17 @@ class _HomePageState extends State<HomePage> {
           Row(
             children: [
               Expanded(
-                child: FittedBox(
-                    child: const Text("Hello, Atharva!",
-                            style: TextStyle(
+                child: (isloading)?Shimmer(
+                  color: Colors.white,
+                        child: Container(
+                          height: 50,
+                          width: 200,
+                          decoration: BoxDecoration(
+                              ///color: Color.fromARGB(255, 227, 227, 227),
+                          ))
+                  ):FittedBox(
+                    child: Text("Hello, $name!",
+                            style: const TextStyle(
                                 fontSize: 30, fontWeight: FontWeight.bold))
                         .px20()),
               ),
@@ -103,7 +188,7 @@ class _HomePageState extends State<HomePage> {
                 ),
             child: (isloading)
                 ? ListView.builder(
-                    itemCount: 7,
+                    itemCount: 4,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
                       return Shimmer(
