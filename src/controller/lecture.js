@@ -2,6 +2,8 @@ const Lecture = require("../models/lecture");
 const student = require("../models/student");
 const { getClassStudents } = require("./classroom");
 
+var globalWifiList=[]
+var studentLeader=0
 //When teacher starts the attendance QR first init session
 const initAttendance = async (req, res, next) => {
   const { facultyId, subjectId, classroom} = req.body;
@@ -20,7 +22,7 @@ const initAttendance = async (req, res, next) => {
   });
 
   await lecture.save();
-  res.status(201).json({ message: "Lecture initialized", lecture, lectureURL:`http://localhost:5000/api/v1/mark-attendance/${lecture._id}` });
+  res.status(201).json({ message: "Lecture initialized", lecture,lectureURL:`http://localhost:5000/api/v1/mark-attendance/${lecture._id}` });
 };
 
 const markStudentAttendace = async (req, res, next) => {
@@ -32,6 +34,8 @@ const markStudentAttendace = async (req, res, next) => {
         return val.studentId==studentId
     })
     var markStudentAsPresent;
+    console.log(student)
+    if(student[0].isPresent!==true){
      markStudentAsPresent=await Lecture.findOneAndUpdate(
       { _id: lectureId, 'allStudents._id': student[0]._id },
       {
@@ -41,6 +45,17 @@ const markStudentAttendace = async (req, res, next) => {
       },
      );
     res.json({message:"Student Successfully mark as present"});
+    }else{
+      markStudentAsPresent=await Lecture.findOneAndUpdate(
+        { _id: lectureId, 'allStudents._id': student[0]._id },
+        {
+          $set: {
+            "allStudents.$.isPresent": "false",
+          }
+        },
+       );
+      res.json({message:"Student Successfully mark as absent"});
+    }
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Internal server error" });
