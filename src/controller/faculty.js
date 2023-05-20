@@ -1,6 +1,7 @@
 const Faculty=require('../models/faculty.js')
 const bcrypt = require('bcrypt');
 const Subject = require('../models/subject')
+
 const getFacultyDetails=async (req,res,next)=>{
    var data;
    try{
