@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qrollcall/components/splash.dart';
 import 'package:qrollcall/datamodels/studentattendance_model.dart';
+import 'package:qrollcall/info/apilist.dart';
 import 'package:qrollcall/info/profile.dart';
 import 'package:qrollcall/pages/MyRoutes.dart';
+import 'package:qrollcall/widgets/student_atttend_wid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -28,9 +30,12 @@ class _HomePageState extends State<HomePage> {
   final url = "https://reqres.in/api/users?page=2";
 
   static bool isloading = true;
-  var name;
+  var fname;
+  String name = "there";
   var email;
   var initail;
+
+  late get_student_attendance stud_attendance;
   @override
   void initState() {
     // TODO: implement initState
@@ -50,24 +55,37 @@ class _HomePageState extends State<HomePage> {
 
   loaddata() async {
     var sharedpref = await SharedPreferences.getInstance();
-    name = await sharedpref.getString(LoginStatus.name);
+    fname = sharedpref.getString(LoginStatus.name);
     print("Name laoded $name");
+    setState(() {
+      name = fname;
+    });
     // initail = name.charAt(0);
     email = await sharedpref.getString(LoginStatus.email);
-    await Future.delayed(Duration(seconds: 1));
-    final response = await http.get(Uri.parse(url));
-    final catalogJson = response.body;
-    final decodedData = jsonDecode(catalogJson);
-    var userdata = decodedData["data"];
-    UserModel.users =
-        List.from(userdata).map<User>((user) => User.fromMap(user)).toList();
+    await Future.delayed(Duration(seconds: 2));
+    // final response = await http.get(Uri.parse(url));
+    // final catalogJson = response.body;
+    // final decodedData = jsonDecode(catalogJson);
+    // var userdata = decodedData["data"];
+    // UserModel.users =
+    //     List.from(userdata).map<User>((user) => User.fromMap(user)).toList();
 
     //atendance integration in progress
-    // final response = await http.get(Uri.parse(url));
-    // final attendjson = response.body;
-    // Map<String, dynamic> attendMap = jsonDecode(attendjson);
-    // var stud_attendance = get_student_attendance.fromJson(attendMap);
-    
+    var classid = await sharedpref.getString(LoginStatus.classroom);
+    var studid = await sharedpref.getString(LoginStatus.id);
+    final response = await http.post(
+      Uri.parse(QrollCallApis.getstudentattendance),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(
+          <String, String>{"classroomId": "$classid", "studentId": "$studid"}),
+    );
+    final attendjson = response.body;
+    print("post request senddd");
+    print(response.body);
+    Map<String, dynamic> attendMap = jsonDecode(attendjson);
+    stud_attendance = get_student_attendance.fromJson(attendMap);
 
     Timer(Duration(seconds: 1), () {
       setState(() {
@@ -146,15 +164,6 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.lock),
               title: Text("LogOut"),
               onTap: () {
-                // showDialog(
-                //     context: context,
-                //     builder: (BuildContext context) {
-                //       return AlertDialog(
-                //         title: Text("dialog"),
-                //         content: Text("Do you want to logout?"),
-                //         );
-                //     });
-
                 showDialog(
                     barrierDismissible: true,
                     context: context,
@@ -196,17 +205,7 @@ class _HomePageState extends State<HomePage> {
           Row(
             children: [
               Expanded(
-                child: (isloading)
-                    ? Shimmer(
-                        color: Colors.white,
-                        child: Container(
-                            height: 50,
-                            width: 200,
-                            decoration: BoxDecoration(
-
-                                ///color: Color.fromARGB(255, 227, 227, 227),
-                                )))
-                    : FittedBox(
+                child: FittedBox(
                         child: Text("Hello, $name!",
                                 style: const TextStyle(
                                     fontSize: 30, fontWeight: FontWeight.bold))
@@ -254,12 +253,21 @@ class _HomePageState extends State<HomePage> {
                 : ListView.builder(
                     physics: const BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
-                    itemCount: UserModel.users.length,
+                    itemCount: stud_attendance.studentAttendanceArray?.length,
                     //controller: scrollController,
                     itemBuilder: (context, index) {
-                      return UserWidget(
-                        user: UserModel.users[index],
-                      );
+                      return Student_attend_wid(
+                          subjectname: stud_attendance
+                              .studentAttendanceArray?[index].subjectName,
+                          studentAttendedLecture: stud_attendance
+                              .studentAttendanceArray?[index]
+                              .studentAttendedLecture,
+                          totalLectureOfsubject: stud_attendance
+                              .studentAttendanceArray?[index]
+                              .totalLectureOfsubject,
+                          totalPercentageAttendance: stud_attendance
+                              .studentAttendanceArray?[index]
+                              .totalPercentageAttendance);
                     },
                   ),
           ),
