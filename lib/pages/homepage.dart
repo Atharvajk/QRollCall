@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qrollcall/components/splash.dart';
+import 'package:qrollcall/datamodels/studentattendance_model.dart';
 import 'package:qrollcall/info/profile.dart';
 import 'package:qrollcall/pages/MyRoutes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -53,13 +54,21 @@ class _HomePageState extends State<HomePage> {
     print("Name laoded $name");
     // initail = name.charAt(0);
     email = await sharedpref.getString(LoginStatus.email);
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
     final response = await http.get(Uri.parse(url));
     final catalogJson = response.body;
     final decodedData = jsonDecode(catalogJson);
     var userdata = decodedData["data"];
     UserModel.users =
         List.from(userdata).map<User>((user) => User.fromMap(user)).toList();
+
+    //atendance integration in progress
+    // final response = await http.get(Uri.parse(url));
+    // final attendjson = response.body;
+    // Map<String, dynamic> attendMap = jsonDecode(attendjson);
+    // var stud_attendance = get_student_attendance.fromJson(attendMap);
+    
+
     Timer(Duration(seconds: 1), () {
       setState(() {
         isloading = false;
@@ -147,17 +156,19 @@ class _HomePageState extends State<HomePage> {
                 //     });
 
                 showDialog(
-                  barrierDismissible: true,
+                    barrierDismissible: true,
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-
                         title: Text("Logout"),
                         content: Text("Do you want to logout?"),
                         actions: [
-                          TextButton(child: Text("No"),onPressed: () {
+                          TextButton(
+                            child: Text("No"),
+                            onPressed: () {
                               Navigator.pop(context);
-                            },),
+                            },
+                          ),
                           TextButton(
                             child: Text("Yes"),
                             onPressed: () {

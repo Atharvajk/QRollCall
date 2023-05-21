@@ -6,15 +6,27 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'login_form.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-class LoginScreen extends StatelessWidget {
+
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+  
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Background(
         child: SingleChildScrollView(
-          
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: Responsive(
             mobile: const MobileLoginScreen(),

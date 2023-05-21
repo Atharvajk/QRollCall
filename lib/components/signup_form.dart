@@ -45,7 +45,7 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   Future<void> fetchTodos() async {
-    var url = Uri.parse('http://192.168.0.101:5000/api/v1/getclassroomdetails');
+    var url = Uri.parse('https://q-roll-backend.onrender.com/api/v1/getclassroomdetails');
     try {
       var response = await http.get(url);
       var JsonData = jsonDecode(response.body);
@@ -54,6 +54,12 @@ class _SignUpFormState extends State<SignUpForm> {
         classLst = getclass.data!.map((e) => e.name!).toList();
       });
     } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Container(
+          child: Text("Something went wrong!"),
+        ),
+        behavior: SnackBarBehavior.floating,
+      ));
       print(e);
     }
   }
@@ -63,8 +69,8 @@ class _SignUpFormState extends State<SignUpForm> {
      final userlogJson = response.body;
      Map<String, dynamic> userMap = jsonDecode(userlogJson);
       var user = profileuser.fromJson(userMap);
-      print('Howdy, ${user.data?.name}!');
-    print('We sent the verification link to ${user.data?.email}.');
+    //   print('Howdy, ${user.data?.name}!');
+    // print('We sent the verification link to ${user.data?.email}.');
     user.savedata();
     print("Data saved successdully!");
     // var sharedprefs = await SharedPreferences.getInstance();
@@ -89,7 +95,7 @@ class _SignUpFormState extends State<SignUpForm> {
 
     try {
       var response = await http.post(
-          Uri.parse("http://192.168.0.101:5000/api/v1/savestuddetails"),
+          Uri.parse("https://q-roll-backend.onrender.com/api/v1/savestuddetails"),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           },
@@ -112,11 +118,23 @@ class _SignUpFormState extends State<SignUpForm> {
           ),
         );
       } else {
+
         sharedpref.setBool(LoginStatus.LOGKEY, false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Container(
+          child: Text("Wrong email-password combination!"),
+        ),
+        behavior: SnackBarBehavior.floating,
+      ));
       }
     } catch (e) {
       print(e);
-      print(regBody);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Container(
+          child: Text("Something went wrong!"),
+        ),
+        behavior: SnackBarBehavior.floating,
+      ));
     }
   }
 

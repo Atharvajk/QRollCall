@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:qrollcall/components/login_screen.dart';
 import 'package:qrollcall/info/userprofile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../info/profile.dart';
@@ -45,7 +46,7 @@ class _LoginFormState extends State<LoginForm> {
       // var headers = {"Content-Type": "application/json"};
 
       var response = await http.post(
-        Uri.parse("http://192.168.0.101:5000/api/v1/studentlogin"),
+        Uri.parse("https://q-roll-backend.onrender.com/api/v1/studentlogin"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -78,115 +79,130 @@ class _LoginFormState extends State<LoginForm> {
         );
       } else {
         sharedpref.setBool(LoginStatus.LOGKEY, false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Container(
+          child: Text("Wrong email-password combination!"),
+        ),
+        behavior: SnackBarBehavior.floating,
+      ));
       }
       //print(response.body);
     } catch (e) {
       print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Container(
+          child: Text("Something went wrong!"),
+        ),
+        behavior: SnackBarBehavior.floating,
+      ));
+      // const LoginScreen().bringmessenger("Something went wrong");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          TextFormField(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            validator: (val) {
-              if (val!.isEmpty) {
-                return "Enter valid email address";
-              }
-              final RegExp emailRegex =
-                  RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-              if (!emailRegex.hasMatch(val)) {
-                return "Please enter a valid email address";
-              }
-              return null;
-            },
-            keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.next,
-            cursorColor: kPrimaryColor,
-            onSaved: (email) {
-              emailVal = email;
-            },
-            decoration: const InputDecoration(
-              hintText: "Your email",
-              prefixIcon: Padding(
-                padding: EdgeInsets.all(defaultPadding),
-                child: Icon(Icons.person),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: defaultPadding),
-            child: TextFormField(
+    return Material(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            TextFormField(
               autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (val) {
                 if (val!.isEmpty) {
-                  return "Please enter password";
+                  return "Enter valid email address";
+                }
+                final RegExp emailRegex =
+                    RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                if (!emailRegex.hasMatch(val)) {
+                  return "Please enter a valid email address";
                 }
                 return null;
               },
-              onSaved: (val) {
-                passVal = val;
-              },
-              textInputAction: TextInputAction.done,
-              obscureText: showPass ? false : true,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
               cursorColor: kPrimaryColor,
-              decoration: InputDecoration(
-                hintText: "Your password",
-                prefixIcon: const Padding(
+              onSaved: (email) {
+                emailVal = email;
+              },
+              decoration: const InputDecoration(
+                hintText: "Your email",
+                prefixIcon: Padding(
                   padding: EdgeInsets.all(defaultPadding),
-                  child: Icon(Icons.lock),
+                  child: Icon(Icons.person),
                 ),
-                suffixIcon: InkWell(
-                  onTap: () {
-                    setState(() {
-                      showPass = !showPass;
-                    });
-                  },
-                  // padding: EdgeInsets.all(defaultPadding),
-                  child: Padding(
-                    padding: const EdgeInsets.all(defaultPadding),
-                    child: Icon(
-                      Icons.remove_red_eye,
-                      color: showPass ? Colors.black : Colors.grey,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: defaultPadding),
+              child: TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (val) {
+                  if (val!.isEmpty) {
+                    return "Please enter password";
+                  }
+                  return null;
+                },
+                onSaved: (val) {
+                  passVal = val;
+                },
+                textInputAction: TextInputAction.done,
+                obscureText: showPass ? false : true,
+                cursorColor: kPrimaryColor,
+                decoration: InputDecoration(
+                  hintText: "Your password",
+                  prefixIcon: const Padding(
+                    padding: EdgeInsets.all(defaultPadding),
+                    child: Icon(Icons.lock),
+                  ),
+                  suffixIcon: InkWell(
+                    onTap: () {
+                      setState(() {
+                        showPass = !showPass;
+                      });
+                    },
+                    // padding: EdgeInsets.all(defaultPadding),
+                    child: Padding(
+                      padding: const EdgeInsets.all(defaultPadding),
+                      child: Icon(
+                        Icons.remove_red_eye,
+                        color: showPass ? Colors.black : Colors.grey,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: defaultPadding),
-          Hero(
-            tag: "login_btn",
-            child: ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  getData();
-                }
-              },
-              child: Text(
-                "Login".toUpperCase(),
+            const SizedBox(height: defaultPadding),
+            Hero(
+              tag: "login_btn",
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    getData();
+                  }
+                },
+                child: Text(
+                  "Login".toUpperCase(),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: defaultPadding),
-          AlreadyHaveAnAccountCheck(
-            press: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return const SignUpScreen();
-                  },
-                ),
-              );
-            },
-          ),
-        ],
+            const SizedBox(height: defaultPadding),
+            AlreadyHaveAnAccountCheck(
+              press: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return const SignUpScreen();
+                    },
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
