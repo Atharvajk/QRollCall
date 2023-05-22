@@ -2,14 +2,15 @@ import 'package:qrollcall/info/profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class profileuser {
-  String status=" ";
-  ExistingUser existingUser=ExistingUser();
+  String status = " ";
+  ExistingUser existingUser = ExistingUser();
   String? token;
 
   profileuser({required this.status, required this.existingUser, this.token});
 
   profileuser.fromJson(Map<String, dynamic> json) {
     status = json['status'];
+    existingUser = new ExistingUser.fromJson(json['existingUser']);
     // existingUser = json['existingUser'] != null
     //     ? new ExistingUser.fromJson(json['existingUser'])
     //     : null;
@@ -27,16 +28,15 @@ class profileuser {
   }
 
   void savedata() async {
-
     var sharedpref = await SharedPreferences.getInstance();
-    await sharedpref.setString(LoginStatus.name,existingUser.name);
-    await sharedpref.setString(LoginStatus.id,existingUser.sId);
-    await sharedpref.setString(LoginStatus.classroom,existingUser.classroom);
-    await sharedpref.setString(LoginStatus.department,existingUser.department);
-    await sharedpref.setString(LoginStatus.semester,existingUser.semister);
-    await sharedpref.setString(LoginStatus.mobileNum,existingUser.mobileNum);
-    await sharedpref.setInt(LoginStatus.rollNo,existingUser.rollNo);
-    await sharedpref.setString(LoginStatus.email,existingUser.email);
+    await sharedpref.setString(LoginStatus.name, existingUser.name);
+    await sharedpref.setString(LoginStatus.id, existingUser.sId);
+    await sharedpref.setString(LoginStatus.classroom, existingUser.classroom);
+    await sharedpref.setString(LoginStatus.department, existingUser.department);
+    await sharedpref.setString(LoginStatus.semester, existingUser.semister);
+    await sharedpref.setString(LoginStatus.mobileNum, existingUser.mobileNum);
+    await sharedpref.setInt(LoginStatus.rollNo, existingUser.rollNo);
+    await sharedpref.setString(LoginStatus.email, existingUser.email);
   }
 }
 

@@ -32,7 +32,8 @@ class _HomePageState extends State<HomePage> {
   static bool isloading = true;
   var fname;
   String name = "there";
-  var email;
+  var femail;
+  String email = "empty";
   var initail;
 
   late get_student_attendance stud_attendance;
@@ -57,11 +58,12 @@ class _HomePageState extends State<HomePage> {
     var sharedpref = await SharedPreferences.getInstance();
     fname = sharedpref.getString(LoginStatus.name);
     print("Name laoded $name");
+    femail = await sharedpref.getString(LoginStatus.email);
     setState(() {
       name = fname;
+      email = femail;
     });
     // initail = name.charAt(0);
-    email = await sharedpref.getString(LoginStatus.email);
     await Future.delayed(Duration(seconds: 2));
     // final response = await http.get(Uri.parse(url));
     // final catalogJson = response.body;
@@ -97,14 +99,14 @@ class _HomePageState extends State<HomePage> {
   void logout(BuildContext context) async {
     var sharedpref = await SharedPreferences.getInstance();
     sharedpref.setBool(LoginStatus.LOGKEY, false);
-    await sharedpref.setString(LoginStatus.name,"empty");
-    await sharedpref.setString(LoginStatus.id,"empty");
-    await sharedpref.setString(LoginStatus.classroom,"empty");
-    await sharedpref.setString(LoginStatus.department,"empty");
-    await sharedpref.setString(LoginStatus.semester,"empty");
-    await sharedpref.setString(LoginStatus.mobileNum,"empty");
-    await sharedpref.setInt(LoginStatus.rollNo,0);
-    await sharedpref.setString(LoginStatus.email,"empty");
+    await sharedpref.setString(LoginStatus.name, "empty");
+    await sharedpref.setString(LoginStatus.id, "empty");
+    await sharedpref.setString(LoginStatus.classroom, "empty");
+    await sharedpref.setString(LoginStatus.department, "empty");
+    await sharedpref.setString(LoginStatus.semester, "empty");
+    await sharedpref.setString(LoginStatus.mobileNum, "empty");
+    await sharedpref.setInt(LoginStatus.rollNo, 0);
+    await sharedpref.setString(LoginStatus.email, "empty");
 
     Navigator.pushReplacement(
       context,
@@ -214,10 +216,10 @@ class _HomePageState extends State<HomePage> {
             children: [
               Expanded(
                 child: FittedBox(
-                        child: Text("Hello, $name!",
-                                style: const TextStyle(
-                                    fontSize: 30, fontWeight: FontWeight.bold))
-                            .px20()),
+                    child: Text("Hello, $name!",
+                            style: const TextStyle(
+                                fontSize: 30, fontWeight: FontWeight.bold))
+                        .px20()),
               ),
               InkWell(
                 onTap: () => {print("Profile taped!")},
