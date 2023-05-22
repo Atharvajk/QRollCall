@@ -29,12 +29,13 @@ class _LoginFormState extends State<LoginForm> {
 
   void saveuser_data(Response response) async {
     final userlogJson = response.body;
+    print(userlogJson);
     Map<String, dynamic> userMap = jsonDecode(userlogJson);
     var user = profileuser.fromJson(userMap);
 
-    print('Howdy, ${user.data?.name}!');
+    print('Howdy, ${user.existingUser?.name}!');
 
-    print('We sent the verification link to ${user.data?.email}.');
+    print('We sent the verification link to ${user.existingUser?.email}.');
     user.savedata();
     print("Data saved successdully!");
   }
@@ -80,11 +81,11 @@ class _LoginFormState extends State<LoginForm> {
       } else {
         sharedpref.setBool(LoginStatus.LOGKEY, false);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Container(
-          child: Text("Wrong email-password combination!"),
-        ),
-        behavior: SnackBarBehavior.floating,
-      ));
+          content: Container(
+            child: Text("Wrong email-password combination!"),
+          ),
+          behavior: SnackBarBehavior.floating,
+        ));
       }
       //print(response.body);
     } catch (e) {

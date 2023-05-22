@@ -97,6 +97,14 @@ class _HomePageState extends State<HomePage> {
   void logout(BuildContext context) async {
     var sharedpref = await SharedPreferences.getInstance();
     sharedpref.setBool(LoginStatus.LOGKEY, false);
+    await sharedpref.setString(LoginStatus.name,"empty");
+    await sharedpref.setString(LoginStatus.id,"empty");
+    await sharedpref.setString(LoginStatus.classroom,"empty");
+    await sharedpref.setString(LoginStatus.department,"empty");
+    await sharedpref.setString(LoginStatus.semester,"empty");
+    await sharedpref.setString(LoginStatus.mobileNum,"empty");
+    await sharedpref.setInt(LoginStatus.rollNo,0);
+    await sharedpref.setString(LoginStatus.email,"empty");
 
     Navigator.pushReplacement(
       context,
