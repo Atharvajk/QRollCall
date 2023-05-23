@@ -11,6 +11,7 @@ import 'package:qrollcall/info/apilist.dart';
 import 'package:qrollcall/info/profile.dart';
 import 'package:qrollcall/pages/MyRoutes.dart';
 import 'package:qrollcall/widgets/student_atttend_wid.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -69,7 +70,7 @@ class _HomePageState extends State<HomePage> {
     var sharedpref = await SharedPreferences.getInstance();
     fname = sharedpref.getString(LoginStatus.name);
     print("Name laoded $name");
-    femail = await sharedpref.getString(LoginStatus.email);
+    femail = sharedpref.getString(LoginStatus.email);
     setState(() {
       name = fname;
       email = femail;
@@ -123,21 +124,24 @@ class _HomePageState extends State<HomePage> {
     await sharedpref.setInt(LoginStatus.rollNo, 0);
     await sharedpref.setString(LoginStatus.email, "empty");
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return const SplashScreen();
-        },
-      ),
-    );
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+      builder: (context) {
+        return const SplashScreen();
+      },
+    ), (Route<dynamic> route) => false);
   }
 
   String getsubjnamebyid(String id) {
-    String subjname=" ";
-    List subjects = ["6445678776fe16f933da4c65", "644567a876fe16f933da4c67", "Chemistry", "Hindi", "English"];
+    String subjname = " ";
+    List subjects = [
+      "6445678776fe16f933da4c65",
+      "644567a876fe16f933da4c67",
+      "Chemistry",
+      "Hindi",
+      "English"
+    ];
 
-    for (var i=0; i < subjects.length; i++) {
+    for (var i = 0; i < subjects.length; i++) {
       print(subjects[i]);
     }
     return subjname;
@@ -199,30 +203,42 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.lock),
               title: Text("LogOut"),
               onTap: () {
-                showDialog(
-                    barrierDismissible: true,
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text("Logout"),
-                        content: Text("Do you want to logout?"),
-                        actions: [
-                          TextButton(
-                            child: Text("No"),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          TextButton(
-                            child: Text("Yes"),
-                            onPressed: () {
-                              logout(context);
-                            },
-                          ),
-                        ],
-                        elevation: 10,
-                      );
-                    });
+                QuickAlert.show(
+                  context: context,
+                  type: QuickAlertType.confirm,
+                  title: "LogOut",
+                  text: "Do you want to Logout?",
+                  onConfirmBtnTap: () {
+                    logout(context);
+                  },
+                  onCancelBtnTap: () {
+                    Navigator.pop(context);
+                  },
+                  );
+                // showDialog(
+                //     barrierDismissible: true,
+                //     context: context,
+                //     builder: (BuildContext context) {
+                //       return AlertDialog(
+                //         title: Text("Logout"),
+                //         content: Text("Do you want to logout?"),
+                //         actions: [
+                //           TextButton(
+                //             child: Text("No"),
+                //             onPressed: () {
+                //               Navigator.pop(context);
+                //             },
+                //           ),
+                //           TextButton(
+                //             child: Text("Yes"),
+                //             onPressed: () {
+                //               logout(context);
+                //             },
+                //           ),
+                //         ],
+                //         elevation: 10,
+                //       );
+                //     });
 
                 // Navigator.pop(context);
               },

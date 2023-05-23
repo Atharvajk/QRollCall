@@ -109,7 +109,7 @@ class _ScanPageState extends State<ScanPage> {
       body: SafeArea(
           child: Center(
               child: Container(
-        child: "$result".text.make(),
+        child: "Error".text.make(),
         decoration:
             BoxDecoration(color: (isfetch) ? Colors.white70 : Colors.black),
       ))),

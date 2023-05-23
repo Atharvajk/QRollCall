@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:qrollcall/components/login_screen.dart';
 import 'package:qrollcall/info/userprofile.dart';
+import 'package:quickalert/quickalert.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../info/profile.dart';
 import '../pages/homepage.dart';
@@ -24,7 +28,7 @@ class _LoginFormState extends State<LoginForm> {
   String? emailVal;
   String? passVal;
   bool showPass = false;
-
+  bool loaded = false;
   final _formKey = GlobalKey<FormState>();
 
   void saveuser_data(Response response) async {
@@ -40,8 +44,29 @@ class _LoginFormState extends State<LoginForm> {
     print("Data saved successdully!");
   }
 
+  void stillloading() async {
+    Timer(Duration(seconds: 10), () {
+      if (!loaded) {
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title: "Error",
+            text: "Can't connect to server!",
+            );
+      }
+    });
+  }
+
   getData() async {
+    // stillloading();
+    QuickAlert.show(
+        context: context,
+        type: QuickAlertType.loading,
+        title: "Loading",
+        text: "Fetching your data!",
+        );
     var sharedpref = await SharedPreferences.getInstance();
+    stillloading();
     try {
       print("$emailVal $passVal");
       // var headers = {"Content-Type": "application/json"};
@@ -66,6 +91,9 @@ class _LoginFormState extends State<LoginForm> {
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
       if (response.statusCode == 200) {
+        setState(() {
+          loaded = true;
+        });
         //login success
         saveuser_data(response);
 
@@ -80,22 +108,40 @@ class _LoginFormState extends State<LoginForm> {
         );
       } else {
         sharedpref.setBool(LoginStatus.LOGKEY, false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Container(
-            child: Text("Wrong email-password combination!"),
-          ),
-          behavior: SnackBarBehavior.floating,
-        ));
+        print("In 404 response block");
+
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title: "Authentication Failed",
+            // barrierColor: Colors.amber,
+            text: "Wrong email-password combination!",
+            autoCloseDuration: Duration(seconds: 3));
+
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //   content: Container(
+        //     child: Text("Wrong email-password combination!"),
+        //   ),
+        //   behavior: SnackBarBehavior.floating,
+        // ));
       }
       //print(response.body);
     } catch (e) {
       print(e);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Container(
-          child: Text("Something went wrong!"),
-        ),
-        behavior: SnackBarBehavior.floating,
-      ));
+      print("In catch block");
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          title: "Error",
+          text: "Error connecting to server!",
+          autoCloseDuration: Duration(seconds: 3));
+
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      //   content: Container(
+      //     child: Text("Something went wrong!"),
+      //   ),
+      //   behavior: SnackBarBehavior.floating,
+      // ));
       // const LoginScreen().bringmessenger("Something went wrong");
     }
   }

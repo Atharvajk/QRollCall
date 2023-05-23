@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -5,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:qrollcall/constants.dart';
 import 'package:qrollcall/info/userprofile.dart';
 import 'package:qrollcall/pages/homepage.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../info/profile.dart';
 import 'already_have_an_account_check.dart';
@@ -24,6 +26,7 @@ class _SignUpFormState extends State<SignUpForm> {
   bool isClassSelected = false;
   bool showPass = false;
   String? classDropDownVal;
+  bool loaded = false;
 
   TextEditingController pass = TextEditingController();
   TextEditingController passcnf = TextEditingController();
@@ -45,7 +48,8 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   Future<void> fetchTodos() async {
-    var url = Uri.parse('https://q-roll-backend.onrender.com/api/v1/getclassroomdetails');
+    var url = Uri.parse(
+        'https://q-roll-backend.onrender.com/api/v1/getclassroomdetails');
     try {
       var response = await http.get(url);
       var JsonData = jsonDecode(response.body);
@@ -65,21 +69,37 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   void saveuser_data(Response response) async {
-  
-     final userlogJson = response.body;
-     Map<String, dynamic> userMap = jsonDecode(userlogJson);
-      var user = profileuser.fromJson(userMap);
+    final userlogJson = response.body;
+    Map<String, dynamic> userMap = jsonDecode(userlogJson);
+    var user = profileuser.fromJson(userMap);
     //   print('Howdy, ${user.data?.name}!');
     // print('We sent the verification link to ${user.data?.email}.');
     user.savedata();
     print("Data saved successdully!");
     // var sharedprefs = await SharedPreferences.getInstance();
     // sharedprefs.setString(LoginStatus.id, user_data.);
-      
+  }
 
+  void stillloading() async {
+    Timer(Duration(seconds: 10), () {
+      if (!loaded) {
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          title: "Error",
+          text: "Can't connect to server!",
+        );
+      }
+    });
   }
 
   postData() async {
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.loading,
+      title: "Loading",
+      text: "Signing Up!",
+    );
     var sharedpref = await SharedPreferences.getInstance();
 
     var regBody = {
@@ -92,10 +112,11 @@ class _SignUpFormState extends State<SignUpForm> {
       "email": "$emailVal",
       "password": "$passVal"
     };
-
+    stillloading();
     try {
       var response = await http.post(
-          Uri.parse("https://q-roll-backend.onrender.com/api/v1/savestuddetails"),
+          Uri.parse(
+              "https://q-roll-backend.onrender.com/api/v1/savestuddetails"),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           },
@@ -118,23 +139,26 @@ class _SignUpFormState extends State<SignUpForm> {
           ),
         );
       } else {
-
         sharedpref.setBool(LoginStatus.LOGKEY, false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Container(
-          child: Text("Wrong email-password combination!"),
-        ),
-        behavior: SnackBarBehavior.floating,
-      ));
+        print("In 404 response block");
+
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title: "Authentication Failed",
+            // barrierColor: Colors.amber,
+            text: "Wrong input combination!",
+            autoCloseDuration: Duration(seconds: 3));
       }
     } catch (e) {
       print(e);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Container(
-          child: Text("Something went wrong!"),
-        ),
-        behavior: SnackBarBehavior.floating,
-      ));
+      print("In catch block");
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          title: "Error",
+          text: "Error connecting to server!",
+          autoCloseDuration: Duration(seconds: 3));
     }
   }
 
