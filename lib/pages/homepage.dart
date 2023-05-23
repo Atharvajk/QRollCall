@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qrollcall/components/splash.dart';
+import 'package:qrollcall/datamodels/getclassdetails_model.dart';
 import 'package:qrollcall/datamodels/studentattendance_model.dart';
 import 'package:qrollcall/info/apilist.dart';
 import 'package:qrollcall/info/profile.dart';
@@ -37,6 +38,7 @@ class _HomePageState extends State<HomePage> {
   var initail;
 
   late get_student_attendance stud_attendance;
+  late GetClassroomDetails classdetails;
   @override
   void initState() {
     // TODO: implement initState
@@ -52,6 +54,15 @@ class _HomePageState extends State<HomePage> {
     //       curve: Curves.linear);
     // }
     // );
+  }
+
+  loadclassdetails() async {
+    final response = await http.get(Uri.parse(QrollCallApis.getclassdetails));
+    final classjson = response.body;
+    print("get request senddd");
+    print(response.body);
+    Map<String, dynamic> classMap = jsonDecode(classjson);
+    classdetails = GetClassroomDetails.fromJson(classMap);
   }
 
   loaddata() async {
@@ -75,6 +86,8 @@ class _HomePageState extends State<HomePage> {
     //atendance integration in progress
     var classid = await sharedpref.getString(LoginStatus.classroom);
     var studid = await sharedpref.getString(LoginStatus.id);
+
+    //get student attendance
     final response = await http.post(
       Uri.parse(QrollCallApis.getstudentattendance),
       headers: <String, String>{
@@ -89,6 +102,8 @@ class _HomePageState extends State<HomePage> {
     Map<String, dynamic> attendMap = jsonDecode(attendjson);
     stud_attendance = get_student_attendance.fromJson(attendMap);
 
+    //get class details
+    // await loadclassdetails();
     Timer(Duration(seconds: 1), () {
       setState(() {
         isloading = false;
@@ -116,6 +131,16 @@ class _HomePageState extends State<HomePage> {
         },
       ),
     );
+  }
+
+  String getsubjnamebyid(String id) {
+    String subjname=" ";
+    List subjects = ["6445678776fe16f933da4c65", "644567a876fe16f933da4c67", "Chemistry", "Hindi", "English"];
+
+    for (var i=0; i < subjects.length; i++) {
+      print(subjects[i]);
+    }
+    return subjname;
   }
 
   @override
