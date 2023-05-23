@@ -1,10 +1,10 @@
-class GetClassroomDetails {
+class ClassroomDetails {
   String? status;
   List<Data>? data;
 
-  GetClassroomDetails({this.status, this.data});
+  ClassroomDetails({this.status, this.data});
 
-  GetClassroomDetails.fromJson(Map<String, dynamic> json) {
+  ClassroomDetails.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     if (json['data'] != null) {
       data = <Data>[];
@@ -86,7 +86,7 @@ class Timetable {
 }
 
 class Schedule {
-  String? subject;
+  Subject? subject;
   String? startTime;
   String? endTime;
   String? faculty;
@@ -96,7 +96,8 @@ class Schedule {
       {this.subject, this.startTime, this.endTime, this.faculty, this.sId});
 
   Schedule.fromJson(Map<String, dynamic> json) {
-    subject = json['subject'];
+    subject =
+        json['subject'] != null ? new Subject.fromJson(json['subject']) : null;
     startTime = json['startTime'];
     endTime = json['endTime'];
     faculty = json['faculty'];
@@ -105,11 +106,32 @@ class Schedule {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['subject'] = this.subject;
+    if (this.subject != null) {
+      data['subject'] = this.subject!.toJson();
+    }
     data['startTime'] = this.startTime;
     data['endTime'] = this.endTime;
     data['faculty'] = this.faculty;
     data['_id'] = this.sId;
+    return data;
+  }
+}
+
+class Subject {
+  String? sId;
+  String? subject;
+
+  Subject({this.sId, this.subject});
+
+  Subject.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    subject = json['subject'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['subject'] = this.subject;
     return data;
   }
 }

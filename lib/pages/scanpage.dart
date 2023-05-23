@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:http/http.dart' as http;
-
+import 'package:permission_handler/permission_handler.dart';
 class ScanPage extends StatefulWidget {
   const ScanPage({super.key});
 
@@ -22,8 +22,10 @@ class _ScanPageState extends State<ScanPage> {
   String result = "Hello World...!";
   bool isfetch = false;
   Future _scanQR() async {
+    if (await Permission.camera.request().isGranted) {
+  // Either the permission was already granted before or the user just granted it.
     try {
-      //add permisssion handeler
+      
       String? cameraScanResult = await scanner.scan();
       setState(() {
         result = cameraScanResult!;
@@ -34,6 +36,9 @@ class _ScanPageState extends State<ScanPage> {
     } on PlatformException catch (e) {
       print(e);
     }
+}else{
+  openAppSettings();
+}
   }
 
   void reqAttendance() async {
@@ -62,21 +67,33 @@ class _ScanPageState extends State<ScanPage> {
         );
         
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Container(
-            child: Text("Server not responding!"),
-          ),
-          behavior: SnackBarBehavior.floating,
-        ));
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //   content: Container(
+        //     child: Text("Server not responding!"),
+        //   ),
+        //   behavior: SnackBarBehavior.floating,
+        // ));
+        QuickAlert.show(
+        context: context,
+        type: QuickAlertType.error,
+        title: "Error",
+        text: "Server not responding!",
+        );
       }
     } catch (e) {
       print(e);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Container(
-          child: Text("Something went wrong!"),
-        ),
-        behavior: SnackBarBehavior.floating,
-      ));
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      //   content: Container(
+      //     child: Text("Something went wrong!"),
+      //   ),
+      //   behavior: SnackBarBehavior.floating,
+      // ));
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.error,
+        title: "Error",
+        text: "Something went wrong!",
+        );
     }
     Navigator.pop(context);
   }
@@ -87,6 +104,12 @@ class _ScanPageState extends State<ScanPage> {
     var source = 'https://q-roll-backend.onrender.com/api/';
     if (result.contains(source)) {
       print('Our source matched!..Initializing mark attendance');
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.loading,
+        title: "Loading",
+        text: "Marking Attendance...",
+        );
       reqAttendance();
     } else {
       print("Bad URL");
@@ -98,6 +121,7 @@ class _ScanPageState extends State<ScanPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    
     _scanQR();
   }
 

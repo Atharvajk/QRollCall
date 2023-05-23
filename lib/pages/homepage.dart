@@ -15,6 +15,7 @@ import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:intl/intl.dart';
 
 import '../widgets/userwidget.dart';
 import 'multiusermodel.dart';
@@ -32,14 +33,16 @@ class _HomePageState extends State<HomePage> {
   final url = "https://reqres.in/api/users?page=2";
 
   static bool isloading = true;
+  static bool timetableloading = true;
   var fname;
   String name = "there";
   var femail;
   String email = "empty";
   var initail;
-
+  late DateTime date;
+  late String today;
   late get_student_attendance stud_attendance;
-  late GetClassroomDetails classdetails;
+  late ClassroomDetails classdetails;
   @override
   void initState() {
     // TODO: implement initState
@@ -47,8 +50,10 @@ class _HomePageState extends State<HomePage> {
 
     setState(() {
       isloading = true;
+      timetableloading = true;
     });
     loaddata();
+    loadclassdetails();
     // Future.delayed(Duration(milliseconds: 500), () {
     //   scrollController.animateTo(scrollController.position.maxScrollExtent,
     //       duration: Duration(seconds: UserModel.users.length * 10),
@@ -58,12 +63,38 @@ class _HomePageState extends State<HomePage> {
   }
 
   loadclassdetails() async {
-    final response = await http.get(Uri.parse(QrollCallApis.getclassdetails));
-    final classjson = response.body;
-    print("get request senddd");
-    print(response.body);
-    Map<String, dynamic> classMap = jsonDecode(classjson);
-    classdetails = GetClassroomDetails.fromJson(classMap);
+    try {
+      final response = await http.get(Uri.parse(QrollCallApis.getclassdetails));
+      final classjson = response.body;
+      print("get request senddd load class details");
+      print(response.body);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> classMap = jsonDecode(classjson);
+        classdetails = await ClassroomDetails.fromJson(classMap);
+        print("length is ${classdetails.data![0].timetable!.length}");
+        setState(() {
+          timetableloading = false;
+        });
+      } else {
+        //status =404
+      }
+    } catch (e) {
+      //error in request sending
+    }
+    date = DateTime.now();
+    //may cause error as db has upto wednesday
+    today = DateFormat('EEEE').format(date);
+    print("day is $today");
+  }
+
+  int getindexday(String day) {
+    List days = ["Monday", "Tuesday", "Wednesday"];
+    for (int i = 0; i < days.length; i++) {
+      if (day == days[i]) {
+        return i;
+      }
+    }
+    return 0;
   }
 
   loaddata() async {
@@ -165,7 +196,7 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             UserAccountsDrawerHeader(
               accountName: Text("$name"),
-              accountEmail: Text("$email"),
+              accountEmail: (isloading) ? Text(" ") : Text("$email"),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.orange,
                 child: (isloading)
@@ -214,7 +245,7 @@ class _HomePageState extends State<HomePage> {
                   onCancelBtnTap: () {
                     Navigator.pop(context);
                   },
-                  );
+                );
                 // showDialog(
                 //     barrierDismissible: true,
                 //     context: context,
@@ -304,7 +335,7 @@ class _HomePageState extends State<HomePage> {
                 : ListView.builder(
                     physics: const BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
-                    itemCount: stud_attendance.studentAttendanceArray?.length,
+                    itemCount: stud_attendance.studentAttendanceArray!.length,
                     //controller: scrollController,
                     itemBuilder: (context, index) {
                       return Student_attend_wid(
@@ -339,7 +370,7 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 24,
           ),
-          const Text("Previous Attendance",
+          const Text("Today's Schedule",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))
               .px24(),
           Container(
@@ -348,22 +379,52 @@ class _HomePageState extends State<HomePage> {
             child: ListView.separated(
               physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.vertical,
-              itemCount: 10,
+              itemCount: (timetableloading)
+                  ? 5
+                  : classdetails
+                      .data![0].timetable![getindexday(today)].schedule!.length,
               itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 216, 170, 231),
-                      borderRadius: BorderRadius.circular(15)),
-                  child: ListTile(
-                    leading: Text("${7 + index}:00 am"),
-                    title: Text("Lecture No ${index + 1}"),
-                    subtitle: Text("By Teacher No ${index + 1}"),
-                    trailing: Icon(
-                      Icons.check_circle,
-                      color: Colors.black,
-                    ),
-                  ),
-                );
+                return (timetableloading)
+                    ? Shimmer(
+                        color: Colors.white,
+                        child: Container(
+                          height: 70,
+                          width: 500,
+                          decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 201, 201, 201),
+                              borderRadius: BorderRadius.circular(15)),
+                        ))
+                    : Container(
+                        decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 216, 170, 231),
+                            borderRadius: BorderRadius.circular(15)),
+                        child: ListTile(
+                          leading: SizedBox(
+                            width: 60,
+                            child: Text(
+                              "${(classdetails.data![0].timetable![getindexday(today)].schedule![index].startTime).toString()} to ${(classdetails.data![0].timetable![getindexday(today)].schedule![index].endTime).toString()}",
+                              maxLines: 2,
+                            ),
+                          ),
+                          title: Text((classdetails
+                                  .data![0]
+                                  .timetable![getindexday(today)]
+                                  .schedule![index]
+                                  .subject
+                                  ?.subject)
+                              .toString()),
+                          subtitle: Text(
+                              "By ${(classdetails.data![0].timetable![getindexday(today)].schedule![index].faculty).toString()}"),
+
+                          // leading: Text("${7 + index}:00 am"),
+                          // title: Text("Lecture No ${index + 1}"),
+                          // subtitle: Text("By Teacher No ${index + 1}"),
+                          // trailing: Icon(
+                          //   Icons.check_circle,
+                          //   color: Colors.black,
+                          // ),
+                        ),
+                      );
               },
               separatorBuilder: (context, index) => SizedBox(
                 height: 10,
