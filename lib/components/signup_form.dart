@@ -8,6 +8,8 @@ import 'package:qrollcall/info/userprofile.dart';
 import 'package:qrollcall/pages/homepage.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../datamodels/getclassdetails_model.dart';
+import '../info/apilist.dart';
 import '../info/profile.dart';
 import 'already_have_an_account_check.dart';
 import 'login_screen.dart';
@@ -48,24 +50,54 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   Future<void> fetchTodos() async {
-    var url = Uri.parse(
-        'https://q-roll-backend.onrender.com/api/v1/getclassroomdetails');
     try {
-      var response = await http.get(url);
-      var JsonData = jsonDecode(response.body);
-      getClass getclass = getClass.fromJson(JsonData);
-      setState(() {
-        classLst = getclass.data!.map((e) => e.name!).toList();
-      });
+      final response = await http.get(Uri.parse(QrollCallApis.getclassdetails));
+      final classjson = response.body;
+      print("get request senddd load class details");
+      print(response.body);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> classMap = jsonDecode(classjson);
+        var classdetails = await ClassroomDetails.fromJson(classMap);
+        setState(() {
+          classLst = classdetails.data!.map((e) => e.name!).toList();
+        });
+      } else {
+        //404
+        QuickAlert.show(
+        context: context,
+        type: QuickAlertType.error,
+        title: "Error",
+        text: "Something went wrong!",
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Container(
-          child: Text("Something went wrong!"),
-        ),
-        behavior: SnackBarBehavior.floating,
-      ));
-      print(e);
+      //error in server
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.error,
+        title: "Error",
+        text: "Something went wrong!",
+        );
     }
+
+    // var url = Uri.parse(
+    //     'https://q-roll-backend.onrender.com/api/v1/getclassroomdetails');
+    // try {
+    //   var response = await http.get(url);
+    //   var JsonData = jsonDecode(response.body);
+    //   getClass getclass = getClass.fromJson(JsonData);
+    //   setState(() {
+    //     classLst = getclass.data!.map((e) => e.name!).toList();
+    //   });
+    // } catch (e) {
+    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //     content: Container(
+    //       child: Text("Something went wrong!"),
+    //     ),
+    //     behavior: SnackBarBehavior.floating,
+    //   ));
+    //   print(e);
+    // }
   }
 
   void saveuser_data(Response response) async {
