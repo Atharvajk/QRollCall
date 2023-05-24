@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:qrollcall/classModel.dart';
 
 class QRScreen extends StatefulWidget {
   const QRScreen({super.key});
@@ -8,6 +10,7 @@ class QRScreen extends StatefulWidget {
 }
 
 class _QRScreenState extends State<QRScreen> {
+  String data = "https://www.wikipedia.org/";
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -24,7 +27,12 @@ class _QRScreenState extends State<QRScreen> {
           Container(
             width: 400,
             height: 400,
-            decoration: BoxDecoration(color: Colors.orange.shade300),
+            decoration:
+                BoxDecoration(color: Color.fromARGB(255, 235, 166, 244)),
+            child: QrImageView(
+              data: data,
+              size: 400.0,
+            ),
           )
         ],
       ),
