@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
     var sharedpref = await SharedPreferences.getInstance();
     var isauthentic = sharedpref.getBool(LoginStatus.LOGKEY);
     //it should be 3
-    Timer(Duration(seconds: 5), () {
+    Timer(Duration(seconds: 3), () {
       setState(() {
         isvisible = false;
       });
