@@ -5,14 +5,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qrollcall/components/splash.dart';
+import 'package:qrollcall/datamodels/getclassdetails_model.dart';
 import 'package:qrollcall/datamodels/studentattendance_model.dart';
 import 'package:qrollcall/info/apilist.dart';
 import 'package:qrollcall/info/profile.dart';
 import 'package:qrollcall/pages/MyRoutes.dart';
 import 'package:qrollcall/widgets/student_atttend_wid.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:intl/intl.dart';
 
 import '../widgets/userwidget.dart';
 import 'multiusermodel.dart';
@@ -30,13 +33,16 @@ class _HomePageState extends State<HomePage> {
   final url = "https://reqres.in/api/users?page=2";
 
   static bool isloading = true;
+  static bool timetableloading = true;
   var fname;
   String name = "there";
   var femail;
   String email = "empty";
   var initail;
-
+  late DateTime date;
+  late String today;
   late get_student_attendance stud_attendance;
+  late ClassroomDetails classdetails;
   @override
   void initState() {
     // TODO: implement initState
@@ -44,8 +50,10 @@ class _HomePageState extends State<HomePage> {
 
     setState(() {
       isloading = true;
+      timetableloading = true;
     });
     loaddata();
+    loadclassdetails();
     // Future.delayed(Duration(milliseconds: 500), () {
     //   scrollController.animateTo(scrollController.position.maxScrollExtent,
     //       duration: Duration(seconds: UserModel.users.length * 10),
@@ -54,11 +62,46 @@ class _HomePageState extends State<HomePage> {
     // );
   }
 
+  loadclassdetails() async {
+    try {
+      final response = await http.get(Uri.parse(QrollCallApis.getclassdetails));
+      final classjson = response.body;
+      print("get request senddd load class details");
+      print(response.body);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> classMap = jsonDecode(classjson);
+        classdetails = await ClassroomDetails.fromJson(classMap);
+        print("length is ${classdetails.data![0].timetable!.length}");
+        setState(() {
+          timetableloading = false;
+        });
+      } else {
+        //status =404
+      }
+    } catch (e) {
+      //error in request sending
+    }
+    date = DateTime.now();
+    //may cause error as db has upto wednesday
+    today = DateFormat('EEEE').format(date);
+    print("day is $today");
+  }
+
+  int getindexday(String day) {
+    List days = ["Monday", "Tuesday", "Wednesday"];
+    for (int i = 0; i < days.length; i++) {
+      if (day == days[i]) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
   loaddata() async {
     var sharedpref = await SharedPreferences.getInstance();
     fname = sharedpref.getString(LoginStatus.name);
     print("Name laoded $name");
-    femail = await sharedpref.getString(LoginStatus.email);
+    femail = sharedpref.getString(LoginStatus.email);
     setState(() {
       name = fname;
       email = femail;
@@ -75,6 +118,8 @@ class _HomePageState extends State<HomePage> {
     //atendance integration in progress
     var classid = await sharedpref.getString(LoginStatus.classroom);
     var studid = await sharedpref.getString(LoginStatus.id);
+
+    //get student attendance
     final response = await http.post(
       Uri.parse(QrollCallApis.getstudentattendance),
       headers: <String, String>{
@@ -89,6 +134,8 @@ class _HomePageState extends State<HomePage> {
     Map<String, dynamic> attendMap = jsonDecode(attendjson);
     stud_attendance = get_student_attendance.fromJson(attendMap);
 
+    //get class details
+    // await loadclassdetails();
     Timer(Duration(seconds: 1), () {
       setState(() {
         isloading = false;
@@ -108,14 +155,27 @@ class _HomePageState extends State<HomePage> {
     await sharedpref.setInt(LoginStatus.rollNo, 0);
     await sharedpref.setString(LoginStatus.email, "empty");
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return const SplashScreen();
-        },
-      ),
-    );
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+      builder: (context) {
+        return const SplashScreen();
+      },
+    ), (Route<dynamic> route) => false);
+  }
+
+  String getsubjnamebyid(String id) {
+    String subjname = " ";
+    List subjects = [
+      "6445678776fe16f933da4c65",
+      "644567a876fe16f933da4c67",
+      "Chemistry",
+      "Hindi",
+      "English"
+    ];
+
+    for (var i = 0; i < subjects.length; i++) {
+      print(subjects[i]);
+    }
+    return subjname;
   }
 
   @override
@@ -136,7 +196,7 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             UserAccountsDrawerHeader(
               accountName: Text("$name"),
-              accountEmail: Text("$email"),
+              accountEmail: (isloading) ? Text(" ") : Text("$email"),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.orange,
                 child: (isloading)
@@ -174,30 +234,42 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.lock),
               title: Text("LogOut"),
               onTap: () {
-                showDialog(
-                    barrierDismissible: true,
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text("Logout"),
-                        content: Text("Do you want to logout?"),
-                        actions: [
-                          TextButton(
-                            child: Text("No"),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          TextButton(
-                            child: Text("Yes"),
-                            onPressed: () {
-                              logout(context);
-                            },
-                          ),
-                        ],
-                        elevation: 10,
-                      );
-                    });
+                QuickAlert.show(
+                  context: context,
+                  type: QuickAlertType.confirm,
+                  title: "LogOut",
+                  text: "Do you want to Logout?",
+                  onConfirmBtnTap: () {
+                    logout(context);
+                  },
+                  onCancelBtnTap: () {
+                    Navigator.pop(context);
+                  },
+                );
+                // showDialog(
+                //     barrierDismissible: true,
+                //     context: context,
+                //     builder: (BuildContext context) {
+                //       return AlertDialog(
+                //         title: Text("Logout"),
+                //         content: Text("Do you want to logout?"),
+                //         actions: [
+                //           TextButton(
+                //             child: Text("No"),
+                //             onPressed: () {
+                //               Navigator.pop(context);
+                //             },
+                //           ),
+                //           TextButton(
+                //             child: Text("Yes"),
+                //             onPressed: () {
+                //               logout(context);
+                //             },
+                //           ),
+                //         ],
+                //         elevation: 10,
+                //       );
+                //     });
 
                 // Navigator.pop(context);
               },
@@ -263,7 +335,7 @@ class _HomePageState extends State<HomePage> {
                 : ListView.builder(
                     physics: const BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
-                    itemCount: stud_attendance.studentAttendanceArray?.length,
+                    itemCount: stud_attendance.studentAttendanceArray!.length,
                     //controller: scrollController,
                     itemBuilder: (context, index) {
                       return Student_attend_wid(
@@ -298,7 +370,7 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 24,
           ),
-          const Text("Previous Attendance",
+          const Text("Today's Schedule",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))
               .px24(),
           Container(
@@ -307,22 +379,52 @@ class _HomePageState extends State<HomePage> {
             child: ListView.separated(
               physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.vertical,
-              itemCount: 10,
+              itemCount: (timetableloading)
+                  ? 5
+                  : classdetails
+                      .data![0].timetable![getindexday(today)].schedule!.length,
               itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 216, 170, 231),
-                      borderRadius: BorderRadius.circular(15)),
-                  child: ListTile(
-                    leading: Text("${7 + index}:00 am"),
-                    title: Text("Lecture No ${index + 1}"),
-                    subtitle: Text("By Teacher No ${index + 1}"),
-                    trailing: Icon(
-                      Icons.check_circle,
-                      color: Colors.black,
-                    ),
-                  ),
-                );
+                return (timetableloading)
+                    ? Shimmer(
+                        color: Colors.white,
+                        child: Container(
+                          height: 70,
+                          width: 500,
+                          decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 201, 201, 201),
+                              borderRadius: BorderRadius.circular(15)),
+                        ))
+                    : Container(
+                        decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 216, 170, 231),
+                            borderRadius: BorderRadius.circular(15)),
+                        child: ListTile(
+                          leading: SizedBox(
+                            width: 60,
+                            child: Text(
+                              "${(classdetails.data![0].timetable![getindexday(today)].schedule![index].startTime).toString()} to ${(classdetails.data![0].timetable![getindexday(today)].schedule![index].endTime).toString()}",
+                              maxLines: 2,
+                            ),
+                          ),
+                          title: Text((classdetails
+                                  .data![0]
+                                  .timetable![getindexday(today)]
+                                  .schedule![index]
+                                  .subject
+                                  ?.subject)
+                              .toString()),
+                          subtitle: Text(
+                              "By ${(classdetails.data![0].timetable![getindexday(today)].schedule![index].faculty).toString()}"),
+
+                          // leading: Text("${7 + index}:00 am"),
+                          // title: Text("Lecture No ${index + 1}"),
+                          // subtitle: Text("By Teacher No ${index + 1}"),
+                          // trailing: Icon(
+                          //   Icons.check_circle,
+                          //   color: Colors.black,
+                          // ),
+                        ),
+                      );
               },
               separatorBuilder: (context, index) => SizedBox(
                 height: 10,
