@@ -6,6 +6,12 @@ import 'login_screen.dart';
 import 'signUp_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qrollcall/constants.dart';
+import 'package:qrollcall/teacher_dashboard/screens/teacher_dashboard.dart';
+
+//teacher imports
+
+import '../teacher_signup_login/login_screen.dart' as teacherlogin;
+import '../teacher_signup_login/signUp_screen.dart' as teachersignup;
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -125,7 +131,7 @@ class _MobileWelcomeScreenState extends State<MobileWelcomeScreen>
                     child:
                         TabBarView(controller: tabController, children: const [
                       LoginAndSignupBtn(),
-                      LoginAndSignupBtn(),
+                      LoginAndSignupTeacher(),
                     ]),
                   ).py8()
                 ],
@@ -207,6 +213,77 @@ class LoginAndSignupBtn extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) {
                   return SignUpScreen();
+                },
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+              backgroundColor: kPrimaryLightColor, elevation: 0),
+          child: Text(
+            "Sign Up".toUpperCase(),
+            style: const TextStyle(color: Colors.black),
+          ),
+        ),
+        const SizedBox(width: 30),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return TeacherDash();
+                },
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+              backgroundColor: kPrimaryLightColor, elevation: 0),
+          child: Text(
+            "Teacher_dash".toUpperCase(),
+            style: const TextStyle(color: Colors.black),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class LoginAndSignupTeacher extends StatelessWidget {
+  const LoginAndSignupTeacher({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Hero(
+          tag: "login_btn",
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const teacherlogin.LoginScreen();
+                  },
+                ),
+              );
+            },
+            child: Text(
+              "Login".toUpperCase(),
+            ),
+          ),
+        ),
+        const SizedBox(width: 30),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return const teachersignup.SignUpScreen();
                 },
               ),
             );

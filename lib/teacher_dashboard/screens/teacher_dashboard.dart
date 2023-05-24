@@ -27,6 +27,9 @@ class _TeacherDashState extends State<TeacherDash> {
   void initState() {
     super.initState();
     fetchClass();
+    setState(() {
+      isLecture = true;
+    });
   }
 
   fetchClass() async {
@@ -47,24 +50,34 @@ class _TeacherDashState extends State<TeacherDash> {
 
   Widget getWidget() {
     if (isLecture) {
-      return ListView.builder(
+      return ListView.separated(
         itemBuilder: (context, index) {
-          return InkWell(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const StudentInfo()));
-            },
-            child: SizedBox(
-              width: 50,
-              height: 50,
-              child: Card(
-                color: Colors.white,
-                child: Center(child: Text(lectures[index])),
+          return Container(
+            decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 216, 170, 231),
+                borderRadius: BorderRadius.circular(15)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const StudentInfo()));
+                },
+                child: ListTile(
+                  title: Text(lectures[index]),
+                  trailing: const Icon(Icons.open_in_new_outlined,
+                      color: Colors.black),
+                ),
               ),
             ),
           );
         },
         itemCount: lectures.length,
+        separatorBuilder: (context, index) => const SizedBox(
+          height: 10,
+        ),
       );
     } else if (isPractical) {
       return ListView.builder(
@@ -124,34 +137,61 @@ class _TeacherDashState extends State<TeacherDash> {
         ),
       ),
       drawer: SizedBox(
-        width: 250,
+        width: 300,
         child: Drawer(
-          backgroundColor: Colors.white,
-          child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-            const Spacer(),
-            Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: InkWell(
-                  onTap: () {
-                    print("button pressed");
-                  },
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Logout",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      SizedBox(width: 20),
-                      Icon(
-                        Icons.logout,
-                        size: 20.0,
-                      )
-                    ],
+            backgroundColor: Colors.white,
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                const DrawerHeader(
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 216, 170, 231),
+                    ),
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundImage: NetworkImage(
+                              'https://pbs.twimg.com/media/FVXi83paQAA5P1Q.jpg',
+                              scale: 1),
+                        ),
+                        Text("jeff@yahoo.in")
+                      ],
+                    )),
+                const SizedBox(
+                  height: 30,
+                ),
+                Center(
+                  child: Container(
+                    width: 120,
+                    height: 100,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                            style: ButtonStyle(
+                                elevation: MaterialStateProperty.all<double>(0),
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white)),
+                            onPressed: () {},
+                            child: const Text(
+                              "Logout",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 18),
+                            )),
+                        const SizedBox(
+                          child: Icon(
+                            Icons.logout,
+                            color: Colors.black,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                )),
-          ]),
-        ),
+                )
+              ],
+            )),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -202,60 +242,60 @@ class _TeacherDashState extends State<TeacherDash> {
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
                   child: Column(
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 100,
-                            height: 35,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                color: Colors.yellow),
-                            child: InkWell(
-                              child: const Center(child: Text("Lectures")),
-                              onTap: () {
-                                setState(() {
-                                  isLecture = true;
-                                  isPractical = false;
-                                });
-                              },
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Container(
-                            width: 100,
-                            height: 35,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                color: Colors.yellow),
-                            child: InkWell(
-                              child: const Center(
-                                child: Text(
-                                  "Practicals",
-                                ),
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  isPractical = true;
-                                  isLecture = false;
-                                });
-                              },
-                            ),
-                          )
-                        ],
-                      ),
+                      ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              isLecture = true;
+                            });
+                          },
+                          child: const Text("Lectures")),
+                      // Row(
+                      //   children: [
+                      //     Container(
+                      //       width: 100,
+                      //       height: 35,
+                      //       decoration: BoxDecoration(
+                      //           borderRadius: BorderRadius.circular(6),
+                      //           color: Colors.yellow),
+                      //       child: InkWell(
+                      //         child: const Center(child: Text("Lectures")),
+                      //         onTap: () {
+                      //           setState(() {
+                      //             isLecture = true;
+                      //             isPractical = false;
+                      //           });
+                      //         },
+                      //       ),
+                      //     ),
+                      // const SizedBox(
+                      //   width: 10,
+                      // ),
+                      // Container(
+                      //   width: 100,
+                      //   height: 35,
+                      //   decoration: BoxDecoration(
+                      //       borderRadius: BorderRadius.circular(6),
+                      //       color: Colors.yellow),
+                      //   child: InkWell(
+                      //     child: const Center(
+                      //       child: Text(
+                      //         "Practicals",
+                      //       ),
+                      //     ),
+                      //     onTap: () {
+                      //       setState(() {
+                      //         isPractical = true;
+                      //         isLecture = false;
+                      //       });
+                      //     },
+                      //   ),
+                      // )
+                      // ],
+                      // ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         child: Container(
-                            height: 200,
-                            width: 200,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Colors.black,
-                                    width: 1), // Customize the border
-                                borderRadius: BorderRadius.circular(4)),
-                            child: getWidget()),
+                            width: 500, height: 400, child: getWidget()),
                       )
                     ],
                   )),

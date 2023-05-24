@@ -31,6 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void authentication() async{
     var sharedpref = await SharedPreferences.getInstance();
     var isauthentic = sharedpref.getBool(LoginStatus.LOGKEY);
+    //it should be 3
     Timer(Duration(seconds: 3), () {
       setState(() {
         isvisible = false;
@@ -48,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen> {
           builder: (context) {
             return const WelcomeScreen();
           },
-        ),
+        ), 
       );
       }
     } else {
