@@ -12,6 +12,7 @@ class _StudentState extends State<Student> {
   Widget build(BuildContext context) {
     return Material(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -26,21 +27,25 @@ class _StudentState extends State<Student> {
                 ),
                 Container(
                   width: 200,
-                  height: 100,
-                  decoration: const BoxDecoration(color: Colors.white),
+                  height: 250,
+                  //decoration: const BoxDecoration(color: Colors.white),
                   child: const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         "Student Name",
-                        style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 25, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         "jeff@yahoo.in",
-                        style: TextStyle(fontSize: 20,fontWeight: FontWeight.normal),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.normal),
                       ),
                       Text(
                         "9307299366",
-                        style: TextStyle(fontSize: 20,fontWeight: FontWeight.normal),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.normal),
                       )
                     ],
                   ),

@@ -185,6 +185,7 @@ class LoginAndSignupBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      // crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Hero(
@@ -223,26 +224,26 @@ class LoginAndSignupBtn extends StatelessWidget {
             "Sign Up".toUpperCase(),
             style: const TextStyle(color: Colors.black),
           ),
-        ),
-        const SizedBox(width: 30),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return TeacherDash();
-                },
-              ),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-              backgroundColor: kPrimaryLightColor, elevation: 0),
-          child: Text(
-            "Teacher_dash".toUpperCase(),
-            style: const TextStyle(color: Colors.black),
-          ),
         )
+        // const SizedBox(width: 30),
+        // ElevatedButton(
+        //   onPressed: () {
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(
+        //         builder: (context) {
+        //           return TeacherDash();
+        //         },
+        //       ),
+        //     );
+        //   },
+        //   style: ElevatedButton.styleFrom(
+        //       backgroundColor: kPrimaryLightColor, elevation: 0),
+        //   child: Text(
+        //     "Teacher_dash".toUpperCase(),
+        //     style: const TextStyle(color: Colors.black),
+        //   ),
+        // )
       ],
     );
   }
@@ -262,11 +263,19 @@ class LoginAndSignupTeacher extends StatelessWidget {
           tag: "login_btn",
           child: ElevatedButton(
             onPressed: () {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) {
+              //       return const teacherlogin.LoginScreen();
+              //     },
+              //   ),
+              // );
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) {
-                    return const teacherlogin.LoginScreen();
+                    return TeacherDash();
                   },
                 ),
               );
@@ -279,11 +288,19 @@ class LoginAndSignupTeacher extends StatelessWidget {
         const SizedBox(width: 30),
         ElevatedButton(
           onPressed: () {
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) {
+            //       return const teachersignup.SignUpScreen();
+            //     },
+            //   ),
+            // );
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return const teachersignup.SignUpScreen();
+                  return TeacherDash();
                 },
               ),
             );

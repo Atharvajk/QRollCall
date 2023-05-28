@@ -163,7 +163,7 @@ class _TeacherDashState extends State<TeacherDash> {
                 ),
                 Center(
                   child: Container(
-                    width: 120,
+                    width: 200,
                     height: 100,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -209,7 +209,7 @@ class _TeacherDashState extends State<TeacherDash> {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 30.0, vertical: 30.0),
                 child: Container(
-                  width: 200,
+                  width: 300,
                   child: DropdownButtonHideUnderline(
                     child: DropdownButtonFormField<String>(
                       value: dropVal,

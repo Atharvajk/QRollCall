@@ -89,11 +89,12 @@ class _HomePageState extends State<HomePage> {
 
   int getindexday(String day) {
     List days = ["Monday", "Tuesday", "Wednesday"];
-    for (int i = 0; i < days.length; i++) {
-      if (day == days[i]) {
-        return i;
-      }
-    }
+    //comenting this code returns timetable of monday
+    // for (int i = 0; i < days.length; i++) {
+    //   if (day == days[i]) {
+    //     return i;
+    //   }
+    // }
     return 0;
   }
 

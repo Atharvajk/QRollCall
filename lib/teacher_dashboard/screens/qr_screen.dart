@@ -10,7 +10,8 @@ class QRScreen extends StatefulWidget {
 }
 
 class _QRScreenState extends State<QRScreen> {
-  String data = "https://www.wikipedia.org/";
+  String data =
+      "https://q-roll-backend.onrender.com/api/v1/mark-attendance/646d97e61cafc505f2d406e6";
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -18,7 +19,7 @@ class _QRScreenState extends State<QRScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text(
-            "Scan Here",
+            "Mark your Attendance",
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
           const SizedBox(
@@ -28,7 +29,7 @@ class _QRScreenState extends State<QRScreen> {
             width: 400,
             height: 400,
             decoration:
-                BoxDecoration(color: Color.fromARGB(255, 235, 166, 244)),
+                BoxDecoration(color: Color.fromARGB(255, 255, 255, 255)),
             child: QrImageView(
               data: data,
               size: 400.0,
